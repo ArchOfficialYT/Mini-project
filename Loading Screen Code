@@ -1,0 +1,246 @@
+local tween = game:GetService("TweenService")
+local rep = game:GetService("ReplicatedStorage")
+local player = game:GetService("Players").LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local runService = game:GetService("RunService")
+local ContentProvider = game:GetService("ContentProvider")
+local cam = workspace.CurrentCamera
+local mouse = player:GetMouse()
+game.ReplicatedFirst:RemoveDefaultLoadingScreen()
+pcall(StarterGui.SetCoreGuiEnabled, StarterGui, Enum.CoreGuiType.All, false)
+while not game.Loaded do
+	task.wait(.1)
+end
+
+
+local sc = Instance.new("ScreenGui",player.PlayerGui)
+sc.DisplayOrder = 999
+sc.ZIndexBehavior = Enum.ZIndexBehavior.Global
+local bl = Instance.new("Frame",sc)
+bl.Size = UDim2.fromScale(2,2)
+bl.BackgroundColor3 = Color3.new(0.372549, 0.372549, 0.372549)
+bl.Transparency = 0.5
+bl.AnchorPoint = Vector2.new(0.5,0.5)
+bl.Position = UDim2.fromScale(.5,.5)
+_G.loadingcom = false
+--player:WaitForChild("PlayerGui"):WaitForChild("MainGui").Enabled = false
+
+local text = Instance.new("TextLabel")
+text.BackgroundTransparency = 1
+text.TextColor3 = Color3.new(1, 1, 1)
+text.TextScaled = true
+text.Text = "Please Wait While We Load You In..."
+text.Position = UDim2.new(0.3,0,0.5,0)
+text.Size = UDim2.new(0.4,0,0.01,0)
+text.Parent = bl
+
+--repeat task.wait() until player:WaitForChild("PlayerGui"):FindFirstChild("Tutorial")
+
+--player:WaitForChild("PlayerGui"):WaitForChild("Tutorial").Enabled = false
+--player.PlayerGui:WaitForChild("Custom Inventory"):WaitForChild("hotBar").Visible = false
+
+local blur = script.Blur:Clone()
+blur.Parent = game.Lighting
+local loading = script.LoadingScreenGui:Clone()
+loading.Parent = player.PlayerGui
+loading.Frame.Visible = false
+loading.Circle.Size = UDim2.new(0,0,0,0)
+local anyload = {}
+for _, v in pairs(loading.Frame:GetChildren()) do
+	if v:IsA("ImageLabel") then
+		ContentProvider:Preload(v.Image)
+		table.insert(anyload,v)
+	elseif v:IsA("Sound") then
+		ContentProvider:Preload(v.SoundId)
+		table.insert(anyload,v)
+	end
+end
+ContentProvider:PreloadAsync(anyload)
+local loadbar,loadcomplete = false,false
+local island = nil
+--workspace:WaitForChild("Other"):WaitForChild("EnemiesSpawn"):Destroy()
+--repeat
+--	task.wait(.1)
+--until player:FindFirstChild("Loading") and player.Loading.Value == true
+--repeat
+--	task.wait(.1)
+--	local pl = rep:FindFirstChild(player.Name.."Data")
+--	if pl then
+--		local ch = pl:FindFirstChild("Character")
+--		if ch then
+--			local sp = ch:FindFirstChild("Spawn")
+--			if sp then
+--				island = sp.Value
+--			end
+--		end
+--	end
+--until island
+task.spawn(function()
+	local textla,shadowla = loading.Frame.Hint,loading.Frame.Hint.Shadow
+	local newtext = nil
+	local textnu = nil
+	script.LoadingScreenGui.Frame[" space station ambience"]:Play()
+	repeat
+		local text = {
+			"Explore 3D Metaverse."
+		
+		}
+		if textnu then
+			table.remove(text,textnu)
+		end
+		textnu = math.random(1,#text)
+		newtext = text[textnu]
+		textla.Text = newtext
+		shadowla.Text = newtext
+		tween:Create(textla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 0,TextStrokeTransparency = .5}):Play()
+		tween:Create(shadowla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 0,TextStrokeTransparency = 1}):Play()
+		local sd = tick()
+		repeat
+			task.wait(.1)
+		until tick() - sd >= Random.new():NextNumber(5,6) or loadbar
+		if loadbar then break end
+		tween:Create(textla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 1,TextStrokeTransparency = 1}):Play()
+		tween:Create(shadowla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 1,TextStrokeTransparency = 1}):Play()
+		task.wait(.25)
+	until loadbar
+	tween:Create(textla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 1,TextStrokeTransparency = 1}):Play()
+	tween:Create(shadowla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 1,TextStrokeTransparency = 1}):Play()
+	task.wait(.25)
+	tween:Create(textla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 0,TextStrokeTransparency = .5}):Play()
+	tween:Create(shadowla,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 0,TextStrokeTransparency = 1}):Play()
+	textla.Text = "Welcome to Grand Voyage"
+	shadowla.Text = "Welcome to Grand Voyage"
+	loading.Frame.Loading.Text = "Loading Completed."
+end)
+task.spawn(function()
+	local loca = {
+		["Starting Island"] = {
+			CFrame.new(200.330994, 171.690063, 98.8833694, -0.519474626, -0.0491677113, 0.853070199, -1.86264493e-09, 0.998343229, 0.0575406961, -0.854485869, 0.0298909303, -0.518613935),
+			CFrame.new(-78.2554016, 192.264816, -54.7921257, -0.7252478, -0.199016258, 0.659096479, -0, 0.95731014, 0.289062798, -0.688487947, 0.209642157, -0.694287062),
+			CFrame.new(179.115967, 191.553207, 325.61084, 0.999436498, 0.00263099838, -0.0334622934, -0, 0.996923208, 0.0783838555, 0.0335655659, -0.0783396885, 0.996361494)
+		},
+		["Marine Island"] = {
+			CFrame.new(2516.06323, 145.985107, -1257.04053, 0.705529213, -0.110962108, -0.699939966, -0, 0.987666011, -0.156575561, 0.708680868, 0.110468633, 0.696827233),
+			CFrame.new(2482.13062, 216.321335, -1483.61267, 0.162042096, 0.026063608, -0.986439586, -0, 0.999651194, 0.0264126807, 0.986783922, -0.004279966, 0.161985561)
+		},
+		["Becky Island"] = {
+			CFrame.new(2031.82422, 212.181732, 1527.46509, -0.932490647, -0.131078944, 0.336570472, -0, 0.931826591, 0.362904161, -0.361194372, 0.338404745, -0.868919432),
+			CFrame.new(1962.1781, 165.28624, 1678.42517, 0.904540241, -0.0466396734, 0.423829883, -3.72529074e-09, 0.99399972, 0.109383084, -0.426388383, -0.0989414006, 0.899112642),
+			CFrame.new(2171.49756, 232.252274, 1953.49561, 0.614611447, -0.147563115, 0.774905086, -0, 0.982347369, 0.187065795, -0.788830042, -0.114972778, 0.603761911 )
+		},
+		["Baratie"] = {
+			CFrame.new(3856.44629, 182.589355, 3148.33887, -0.45774582, -0.258310229, 0.85073185, 7.45058149e-09, 0.956864297, 0.29053548, -0.889083207, 0.132991403, -0.43800056),
+			CFrame.new(3521.75586, 156.993607, 3620.60571, 0.911987424, 0.0986190736, -0.398187518, -7.4505806e-09, 0.970672369, 0.240406319, 0.410218269, -0.219247535, 0.885240912)
+		},
+		["Arlong Park"] = {
+			CFrame.new(5018.47217, 217.597687, -2022.12354, 0.805570066, 0.105611384, -0.583012164, -0, 0.983985901, 0.178246886, 0.592500567, -0.143590361, 0.792669535),
+			CFrame.new(4903.9292, 193.162109, -2553.80493, -0.555219829, 0.182039797, -0.811537147, -0, 0.975752831, 0.218875781, 0.831703722, 0.12152417, -0.541757226),
+			CFrame.new(5373.06201, 210.087448, -2587.27734, -0.781539321, -0.0680033863, 0.620138645, -3.7252903e-09, 0.994041324, 0.10900493, -0.623856068, 0.0851916373, -0.77688235)
+		},
+		["Snow Island"] = {
+			CFrame.new(3938.97339, 199.5858, 547.398499, -0.896790445, 0.14085117, -0.419437706, -0, 0.947976828, 0.318339586, 0.442455709, 0.285483897, -0.850136459 ),
+			CFrame.new(4111.81445, 186.04805, 1030.74243, 0.634499907, -0.00369131262, 0.772914112, -2.32830644e-10, 0.999988556, 0.00477578398, -0.772922933, -0.00303023471, 0.634492636)
+		},
+		["Desert Island"] = {
+			CFrame.new(6715.59717, 233.03894, 2024.61426, -0.780356586, 0.292408139, -0.55275774, -0, 0.883938909, 0.467602491, 0.625334859, 0.364896685, -0.689787507 ),
+			CFrame.new(6961.30029, 271.081604, 2618.7312, 0.940662026, -0.0652438626, 0.333013803, -7.4505806e-09, 0.981343269, 0.192264199, -0.339344889, -0.180855632, 0.923112333)
+		}
+	}
+	local cammove = true
+	local function setcam()
+		if loca[island] then
+			local cf = loca[island][math.random(1,#loca[island])] or loca["Starting Island"][math.random(1,#loca["Starting Island"])]
+			if cf then
+				local maxTilt = 25
+				cam.CFrame = cf * CFrame.Angles(
+					math.rad((((mouse.Y - mouse.ViewSizeY / 2) / mouse.ViewSizeY)) * -maxTilt),
+					math.rad((((mouse.X - mouse.ViewSizeX / 2) / mouse.ViewSizeX)) * -maxTilt),
+					0
+				)
+				task.spawn(function()
+					task.wait(.1)
+					while cammove do
+						cam.CameraType = Enum.CameraType.Scriptable
+						tween:Create(cam,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
+							CFrame = cf * CFrame.Angles(
+								math.rad((((mouse.Y - mouse.ViewSizeY / 2) / mouse.ViewSizeY)) * -maxTilt),
+								math.rad((((mouse.X - mouse.ViewSizeX / 2) / mouse.ViewSizeX)) * -maxTilt),
+								0
+							)
+						}):Play()
+						task.wait()
+					end
+				end)
+			end
+		end
+	end
+	--local ccc = rep:FindFirstChild(player.Name.."Data"):FindFirstChild("Character"):FindFirstChild("Spawn").Changed:Connect(function()
+	--	island = rep:FindFirstChild(player.Name.."Data"):FindFirstChild("Character"):FindFirstChild("Spawn").Value
+	--	setcam()
+	--end)
+	--setcam()
+	repeat
+		task.wait(.1)
+	until loadcomplete
+	cammove = false
+	--if ccc then
+	--	ccc:Disconnect()
+	--end
+	--player.PlayerGui:WaitForChild("MainGui").Enabled = true
+	workspace.Camera.CameraType = Enum.CameraType.Custom
+	workspace.Camera.CameraSubject = player.Character.Humanoid
+	blur:Destroy()
+end)
+task.wait(.25)
+task.wait(.25)
+task.spawn(function()
+	while not loadbar do
+		if not loading.Frame then break end
+		loading.Frame.Loading.Text = "Loading."
+		task.wait(.3)
+		if loadbar or not loading.Frame then break end
+		loading.Frame.Loading.Text = "Loading.."
+		task.wait(.3)
+		if loadbar or not loading.Frame then break end
+		loading.Frame.Loading.Text = "Loading..."
+		task.wait(.3)
+	end
+end)
+tween:Create(bl,TweenInfo.new(1,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Transparency = 1}):Play()
+game.Debris:AddItem(sc,1)
+loading.Frame.Visible = true
+local char = player.Character or player.CharacterAdded:Wait()
+tween:Create(loading.Frame.LoadingBar.Progress,TweenInfo.new(25),{Size = UDim2.new(.6,0,1,0)}):Play()
+tween:Create(loading.Frame.Logo,TweenInfo.new(.6,Enum.EasingStyle.Back,Enum.EasingDirection.In),{Size = UDim2.new(.47,0,.38,0)}):Play()
+local out = tick()
+--repeat
+--	task.wait(.1)
+--	if player.Character then
+--		char = player.Character
+--	end
+--until tick() - out >= 10 or (char.Head and char.Humanoid and char.HumanoidRootPart)
+tween:Create(loading.Frame.LoadingBar.Progress,TweenInfo.new(20),{Size = UDim2.new(.85,0,1,0)}):Play()
+local ti = Random.new():NextNumber(3,5)
+tween:Create(loading.Frame.LoadingBar.Progress,TweenInfo.new(ti-0.5),{Size = UDim2.new(1,0,1,0)}):Play()	
+task.wait(ti)
+loadbar = true
+task.wait(1)
+tween:Create(loading.Frame.Logo,TweenInfo.new(.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size = UDim2.new(0,0,0,0),ImageTransparency = 1}):Play()
+task.wait(.5)
+tween:Create(loading.Circle,TweenInfo.new(1),{Size = UDim2.new(3,0,3,0)}):Play()
+task.wait(1)
+loadcomplete = true
+_G.loadingcom = true
+loading.Frame.Visible = false
+task.wait(.5)
+tween:Create(loading.Circle,TweenInfo.new(0.5),{Size = UDim2.new(0,0,0,0)}):Play()
+task.wait(0.5)
+pcall(StarterGui.SetCoreGuiEnabled, StarterGui, Enum.CoreGuiType.All, true)
+pcall(StarterGui.SetCoreGuiEnabled, StarterGui, Enum.CoreGuiType.Health, false)
+--StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+
+loading:Destroy()
+script.LoadingScreenGui.Frame[" space station ambience"]:Stop()
+--game.SoundService.ingame:Play()
+--player:WaitForChild("PlayerGui"):WaitForChild("Tutorial").Enabled = true
+--player.PlayerGui["Custom Inventory"].hotBar.Visible = true
