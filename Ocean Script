@@ -1,0 +1,142 @@
+local tween = game:GetService("TweenService")
+local player = game:GetService("Players").LocalPlayer
+local camera = workspace.CurrentCamera
+_G.OceanPosition = 120
+local water,sand,seatx = Instance.new("Part"),Instance.new("Part"),Instance.new("Part")
+water.Material = Enum.Material.SmoothPlastic
+water.Reflectance = .2
+water.Transparency = 0
+water.CanCollide = false
+water.Anchored = true
+water.Size = Vector3.new(1,1,1)
+water.Color = Color3.fromRGB(0, 106, 159)
+water.Name = "Water"
+script.Settings.Parent = water
+sand.Material = Enum.Material.SmoothPlastic
+sand.CanCollide = true
+sand.Anchored = true
+sand.Size = Vector3.new(1,2000,2000)
+sand.Name = "Sand"
+seatx.Material = Enum.Material.SmoothPlastic
+seatx.Transparency = 1
+seatx.CanCollide = false
+seatx.Anchored = true
+seatx.Size = Vector3.new(.05,3000,3000)
+seatx.Name = "SeaTX"
+local meshwater = Instance.new("SpecialMesh")
+meshwater.MeshType = Enum.MeshType.Brick
+meshwater.Scale = Vector3.new(120, 100000, 100000)
+meshwater.Parent = water
+local meshsand = Instance.new("SpecialMesh")
+meshsand.MeshType = Enum.MeshType.Brick
+meshsand.Scale = Vector3.new(1,7.5,7.5)
+meshsand.Parent = sand
+local meshseatx = Instance.new("SpecialMesh")
+meshseatx.MeshType = Enum.MeshType.Cylinder
+meshseatx.Scale = Vector3.new(0,1.5,1.5)
+meshseatx.Parent = seatx
+local sandtx = Instance.new("Texture")
+sandtx.StudsPerTileU = 20
+sandtx.StudsPerTileV = 20
+sandtx.Texture = "http://www.roblox.com/asset/?id=10442685772"
+sandtx.Face = Enum.NormalId.Left
+local watertx = Instance.new("Texture")
+watertx.StudsPerTileU = 30
+watertx.StudsPerTileV = 30
+watertx.Transparency = .9
+watertx.Face = Enum.NormalId.Left
+local shadowtx = Instance.new("Texture")
+shadowtx.Texture = "rbxassetid://10918427079"
+shadowtx.StudsPerTileU = 300
+shadowtx.StudsPerTileV = 300
+shadowtx.Transparency = .9
+shadowtx.ZIndex = 1
+shadowtx.Face = Enum.NormalId.Left
+shadowtx.Parent = seatx
+local surfacewatertx = Instance.new("Texture")
+surfacewatertx.Texture = "rbxassetid://10918427079"
+surfacewatertx.StudsPerTileU = 300
+surfacewatertx.StudsPerTileV = 300
+surfacewatertx.Transparency = .5
+surfacewatertx.ZIndex = 0
+surfacewatertx.Face = Enum.NormalId.Left
+surfacewatertx.Parent = seatx
+watertx.Parent = water
+sandtx.Parent = sand
+seatx.Parent = workspace.Ocean
+water.Parent = workspace.Ocean
+sand.Parent = workspace.Ocean
+local backoffset = Instance.new("CFrameValue")
+local textureoffset = Instance.new("CFrameValue")
+
+game:GetService("RunService"):BindToRenderStep("Water", Enum.RenderPriority.Camera.Value + 1, function(p5)
+	local cameracframe = camera.CFrame
+	local camerapos = cameracframe * CFrame.new(0, 0, 100).Position
+	local ca = camerapos * Vector3.new(1,0,1)
+	local cacf = CFrame.new(ca)
+	local oc = cacf * CFrame.new(0, _G.OceanPosition+.1, 0)
+	seatx.CFrame = oc * CFrame.fromOrientation(0,0,math.rad(-90))
+	water.CFrame = cacf * CFrame.new(0,60,0) * CFrame.fromOrientation(0,0,math.rad(-90))
+	sand.CFrame = cacf * CFrame.new(0,0,0)  * CFrame.fromOrientation(0,0,math.rad(-90))
+	local follca = CFrame.Angles(0, 0, 0) * CFrame.new(-ca.X, 0, ca.Z)
+	sandtx.OffsetStudsU = follca.Z
+	sandtx.OffsetStudsV = follca.X
+	watertx.OffsetStudsU = follca.Z
+	watertx.OffsetStudsV = follca.X
+	surfacewatertx.OffsetStudsU = follca.Z + textureoffset.Value.X
+	surfacewatertx.OffsetStudsV = follca.X + textureoffset.Value.Z
+	shadowtx.OffsetStudsU = follca.Z + backoffset.Value.X
+	shadowtx.OffsetStudsV = follca.X + backoffset.Value.Z
+end)
+
+task.spawn(function()
+	while true do
+		local ti = Random.new():NextNumber(9,12)
+		tween:Create(backoffset, TweenInfo.new(ti, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {Value = backoffset.Value * CFrame.Angles(0, math.rad(90 - Random.new():NextNumber(-20,20)), 0) * CFrame.new(0, 0, -40)}):Play()
+		task.wait(ti)
+	end
+end)
+
+local waterTexture = {357078195,357078221,357078254,357078304,357078342,357078362,357078375,357078375,357078384,357078404,357078431,357078444,357078456,357078466,357078481,357078500,357078528,357078550,357078569,357078583,357078620,357078677,357078696,357078712,357078726,357078742}
+
+spawn(function()
+	while true do
+		for i = 1,#waterTexture do
+			watertx.Texture = "http://www.roblox.com/asset/?id="..waterTexture[i]
+			wait(.02)
+		end
+	end
+end)
+
+task.spawn(function()
+	local ct = 0.9
+	shadowtx.Transparency = ct
+	while true do
+		local s1 = true
+		ct = game.Lighting.ClockTime
+		local ch = 17.8
+		if ch <= ct then
+			if ct <= game.Lighting.ClockTime then
+				s1 = false
+			end
+			s1 = true
+		end
+		ct = math.random() * 3 + 9
+		local t1 = .2
+		if not s1 then
+			t1 = 0.2
+		else
+			t1 = 0.5
+		end
+		surfacewatertx.Transparency = t1
+		tween:Create(textureoffset, TweenInfo.new(ct, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Value = textureoffset.Value * CFrame.Angles(0, math.rad(90 - math.random(-20000, 20000) / 1000), 0) * CFrame.new(0, 0, -40)}):Play()
+		local tran = 0
+		if not ct then
+			tran = 0
+		else
+			tran = 0.3
+		end
+		tween:Create(surfacewatertx, TweenInfo.new(ct / 2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 0, true), {Transparency = tran}):Play()
+		task.wait(ct)
+	end
+end)
